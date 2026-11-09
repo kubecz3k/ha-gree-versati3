@@ -38,6 +38,7 @@ PARAM_ALL_ERR: Final = "AllErr"
 PARAM_MOD: Final = "Mod"
 PARAM_POW: Final = "Pow"
 PARAM_QUIET: Final = "Quiet"
+PARAM_WEATHER_COMP: Final = "SvSt"  # weather compensation (heating curve), 1=on 0=off
 
 TEMPERATURE_SENSORS: Final[tuple[tuple[str, str, str], ...]] = (
     ("wat_box_tem", "WatBoxTemHi", "WatBoxTemLo"),
@@ -55,6 +56,7 @@ POLL_KEYS: Final[tuple[str, ...]] = (
     PARAM_MOD,
     PARAM_POW,
     PARAM_QUIET,
+    PARAM_WEATHER_COMP,
     *(key for _, hi_key, lo_key in TEMPERATURE_SENSORS for key in (hi_key, lo_key)),
 )
 

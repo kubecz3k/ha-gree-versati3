@@ -15,6 +15,7 @@ from .constants import (
     DATA_ENTRIES,
     PARAM_POW,
     PARAM_QUIET,
+    PARAM_WEATHER_COMP,
 )
 from .coordinator import GreeVersatiCoordinator
 from .entity import GreeVersatiEntity
@@ -35,6 +36,11 @@ async def async_setup_entry(
                 runtime_data[DATA_CLIENT],
             ),
             GreeVersatiQuietSwitch(
+                runtime_data[DATA_COORDINATOR],
+                entry.data[CONF_DEVICE_ID],
+                runtime_data[DATA_CLIENT],
+            ),
+            GreeVersatiWeatherCompSwitch(
                 runtime_data[DATA_COORDINATOR],
                 entry.data[CONF_DEVICE_ID],
                 runtime_data[DATA_CLIENT],
@@ -127,4 +133,46 @@ class GreeVersatiQuietSwitch(GreeVersatiEntity, SwitchEntity):
     async def async_turn_off(self, **kwargs: object) -> None:
         """Turn off quiet mode."""
         await self._client.async_set({PARAM_QUIET: 0})
+        await self.coordinator.async_request_refresh()
+
+
+class GreeVersatiWeatherCompSwitch(GreeVersatiEntity, SwitchEntity):
+    """Weather compensation (heating curve) control switch."""
+
+    _attr_translation_key = "weather_compensation"
+    _attr_icon = "mdi:weather-partly-snowy"
+
+    def __init__(
+        self,
+        coordinator: GreeVersatiCoordinator,
+        device_id: str,
+        client: GreeVersatiProtocolClient,
+    ) -> None:
+        super().__init__(
+            coordinator,
+            device_id,
+            PARAM_WEATHER_COMP,
+            unique_id_key="weather_compensation_switch",
+        )
+        self._client = client
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return switch state."""
+        value = (self.coordinator.data or {}).get(PARAM_WEATHER_COMP)
+        if value is None:
+            return None
+        try:
+            return bool(int(value))
+        except (TypeError, ValueError):
+            return bool(value)
+
+    async def async_turn_on(self, **kwargs: object) -> None:
+        """Enable weather compensation."""
+        await self._client.async_set({PARAM_WEATHER_COMP: 1})
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs: object) -> None:
+        """Disable weather compensation."""
+        await self._client.async_set({PARAM_WEATHER_COMP: 0})
         await self.coordinator.async_request_refresh()

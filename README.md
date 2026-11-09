@@ -16,6 +16,7 @@ This integration is inspired by protocol behavior observed in [`tomikaa87/gree-r
 - Switch entities:
   - `Pow` (power on/off)
   - `Quiet` (quiet mode on/off)
+  - `SvSt` (weather compensation / heating curve on/off)
 - Select entity:
   - `Mod` (mode selector)
 - Sensor entities (unavailable when missing from device response):

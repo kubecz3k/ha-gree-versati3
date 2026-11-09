@@ -51,6 +51,9 @@
       },
       "quiet_mode": {
         "name": "Quiet mode"
+      },
+      "weather_compensation": {
+        "name": "Weather compensation"
       }
     },
     "select": {
